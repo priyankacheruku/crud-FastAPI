@@ -4,7 +4,7 @@
     https://docs.python.org/3/library/venv.html
 * run requirements.txt
 `pip install -r requiremnts.txt`
-* Run the project using `main.py` file inside `app` package.
+* Run the project using `main.py` file inside `book_store` module.
     ```console
-    user@user:~$ univcorn app.main:app --reload 
+    user@user:~$ univcorn book-store.main:app --reload 
     ```

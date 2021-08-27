@@ -4,7 +4,7 @@ from typing import Dict
 
 from fastapi.param_functions import Body, Path
 
-from app.person.models import Person
+from book_store.person.models import Person
 
 router = APIRouter()
 

@@ -2,7 +2,7 @@
 # `books` is the package inside the 'app' package
 
 from fastapi import APIRouter
-from app.books.models import MyBook
+from book_store.books.models import MyBook
 
 from enum import Enum
 class choices(str,Enum):
