@@ -10,7 +10,6 @@ def user_add(user:UserIn):
     """ to maintain different responses for the data"""
     return user
 
-
 @router.get("/user",status_code=status.HTTP_200_OK)
 def get_info():
     return({"message":"i used status from FastAPI"})

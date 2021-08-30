@@ -1,8 +1,10 @@
 # here an example of arbitary router
+from book_store.dependencies import pagination_params
 from fastapi import APIRouter
 from typing import Dict
+from fastapi.encoders import jsonable_encoder
 
-from fastapi.param_functions import Body, Path
+from fastapi.param_functions import Body, Depends, Path
 
 from book_store.person.models import Person
 
@@ -19,15 +21,31 @@ def add_weight(weight:Dict[int,float]):
 def add_person(person:Person):
     return person
 
+persons = {
+    1: {
+        "name":"priyanka",
+        "identity":"developer",
+    },
+    2: {
+        "name":"xyz",
+        "identity":"developer",
+    }
+}
+
 ### using Path for adding validation fot path variable
 @router.put("/person/{person_id}")
-def add_person(*,person_id:int= Path(default=...,ge=0,le=100,
+async def add_person(*,person_id:int= Path(default=...,ge=0,le=100,
                 description="the primary key to identify person")
             ,person:Person
             ):
-    person = person.__dict__
-    person.update({"id":person_id})
-    return person
+    # one way
+    # person = person.__dict__
+
+    # another way
+    encoded_person = jsonable_encoder(person)
+    persons[person_id] = encoded_person
+    return encoded_person
+    
 
 # using `Body` to differentiate `payload value` from `query parameter`
 @router.post("/person/role/{person_id}")
@@ -37,3 +55,6 @@ def send_role_in_payload(*,person_id:int,
     return role
 
 
+@router.get("/person")
+def get_persons(options:dict=Depends(pagination_params)):
+    return {"message":"using pagination params","options":options}
