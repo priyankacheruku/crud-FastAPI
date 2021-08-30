@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional,Set,List
+from typing import Optional, Set, List
 from pydantic.fields import Field
 
 class Image(BaseModel):
