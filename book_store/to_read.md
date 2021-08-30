@@ -21,3 +21,11 @@ Note: these are actually functions that return special classes.
 ## models
 *  `List` ,`Dict` ,`Set` are extra models
 
+## Forms
+* `Form()` to get values from forms
+* `UploadFile()` to upload files
+
+Note:need to install `python-multipart`
+
+##json
+* `jsonable_encoder()` to encode the model to json/dict

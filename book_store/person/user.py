@@ -1,4 +1,5 @@
-from fastapi import APIRouter
+from fastapi import APIRouter,File
+from fastapi.datastructures import UploadFile
 from book_store.person.models import UserIn,UserOut
 from fastapi import status
 router = APIRouter()
@@ -13,3 +14,8 @@ def user_add(user:UserIn):
 @router.get("/user",status_code=status.HTTP_200_OK)
 def get_info():
     return({"message":"i used status from FastAPI"})
+
+@router.post("/user/profile-photo")
+def upload_profile_photo(image:UploadFile = File(...)):
+    return {"image":image.filename}
+
