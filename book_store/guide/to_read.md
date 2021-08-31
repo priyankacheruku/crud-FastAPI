@@ -27,5 +27,5 @@ Note: these are actually functions that return special classes.
 
 Note:need to install `python-multipart`
 
-##json
+## Json
 * `jsonable_encoder()` to encode the model to json/dict
