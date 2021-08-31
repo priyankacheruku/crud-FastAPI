@@ -7,6 +7,7 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.param_functions import Body, Depends, Path
 
 from book_store.person.models import Person
+from pymongo import MongoClient
 
 router = APIRouter()
 
@@ -19,7 +20,12 @@ def add_weight(weight:Dict[int,float]):
 # to perform operations on person
 @router.post("/person/")
 def add_person(person:Person):
-    return person
+    jsonable_encoder(person)
+    with MongoClient() as client:
+        msg_collection = client["book_store"]["person"]
+        result = msg_collection.insert_one(jsonable_encoder(person))
+        return {"message":result.acknowledged}
+    return {"message":"error"}
 
 persons = {
     1: {
