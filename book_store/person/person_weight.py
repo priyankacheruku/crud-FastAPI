@@ -1,4 +1,5 @@
 # here an example of arbitary router
+from fastapi.applications import FastAPI
 from book_store.dependencies import pagination_params
 from fastapi import APIRouter
 from typing import Dict
@@ -99,3 +100,13 @@ def get_person(person_id:str):
         
         person = convert_to_json(person_collection.find_one({"_id":ObjectId(person_id)}))
         return person
+
+
+@router.delete("/person/{person_id}")
+def delete_person(person_id:str):
+    with MongoClient() as client:
+        person_collection = client["book_store"]["person"]
+        x = person_collection.delete_one({"_id":ObjectId(person_id)})
+        if x:
+            return True
+        return False
