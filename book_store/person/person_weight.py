@@ -107,6 +107,6 @@ def delete_person(person_id:str):
     with MongoClient() as client:
         person_collection = client["book_store"]["person"]
         x = person_collection.delete_one({"_id":ObjectId(person_id)})
-        if x:
+        if x.deleted_count:
             return True
         return False
