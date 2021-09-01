@@ -7,6 +7,11 @@ class Person(BaseModel):
     name:str
     identity: str = Field(None,max_length=20)
 
+class PersonResponse(BaseModel):
+    _id :str
+    name:str
+    identity: str
+
 class UserIn(BaseModel):
     user_name : str
     password : str

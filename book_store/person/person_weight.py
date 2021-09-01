@@ -6,8 +6,9 @@ from fastapi.encoders import jsonable_encoder
 
 from fastapi.param_functions import Body, Depends, Path
 
-from book_store.person.models import Person
+from book_store.person.models import Person, PersonResponse
 from pymongo import MongoClient
+from bson.objectid import ObjectId
 
 router = APIRouter()
 
@@ -22,25 +23,25 @@ def add_weight(weight:Dict[int,float]):
 def add_person(person:Person):
     jsonable_encoder(person)
     with MongoClient() as client:
-        msg_collection = client["book_store"]["person"]
-        result = msg_collection.insert_one(jsonable_encoder(person))
+        person_collection = client["book_store"]["person"]
+        result = person_collection.insert_one(jsonable_encoder(person))
         return {"message":result.acknowledged}
     return {"message":"error"}
 
-persons = {
-    1: {
-        "name":"priyanka",
-        "identity":"developer",
-    },
-    2: {
-        "name":"xyz",
-        "identity":"developer",
-    }
-}
+# persons = {
+#     1: {
+#         "name":"priyanka",
+#         "identity":"developer",
+#     },
+#     2: {
+#         "name":"xyz",
+#         "identity":"developer",
+#     }
+# }
 
 ### using Path for adding validation fot path variable
 @router.put("/person/{person_id}")
-async def add_person(*,person_id:int= Path(default=...,ge=0,le=100,
+def update_person(*,person_id:str= Path(default=...,
                 description="the primary key to identify person")
             ,person:Person
             ):
@@ -49,8 +50,18 @@ async def add_person(*,person_id:int= Path(default=...,ge=0,le=100,
 
     # another way
     encoded_person = jsonable_encoder(person)
-    persons[person_id] = encoded_person
-    return encoded_person
+    with MongoClient() as client:
+        person_collection = client["book_store"]["person"]
+        x = person_collection.find_one({"_id":ObjectId(person_id)})
+        if x:
+            result = person_collection.update_one({"_id": ObjectId(person_id)},
+                                         {"$set": encoded_person})
+            if result.acknowledged:
+                return True
+            return False
+        else:
+            return{ "message":"not found"}
+    return 
     
 
 # using `Body` to differentiate `payload value` from `query parameter`
@@ -60,7 +71,31 @@ def send_role_in_payload(*,person_id:int,
         person:Person):
     return role
 
+def convert_to_json(person):
+    return {
+        "id": str(person["_id"]),
+        "name":person["name"],
+        "identity":person["identity"]
+
+    }
 
 @router.get("/person")
 def get_persons(options:dict=Depends(pagination_params)):
-    return {"message":"using pagination params","options":options}
+    with MongoClient() as client:
+        person_collection = client["book_store"]["person"]
+        persons = person_collection.find()
+        results = []
+        for person in persons:
+            results.append(convert_to_json(person))
+            
+        return {"message":"using pagination params","options":options,"results":results}
+    return False
+
+
+@router.get("/person/{person_id}")
+def get_person(person_id:str):
+    with MongoClient() as client:
+        person_collection = client["book_store"]["person"]
+        
+        person = convert_to_json(person_collection.find_one({"_id":ObjectId(person_id)}))
+        return person
