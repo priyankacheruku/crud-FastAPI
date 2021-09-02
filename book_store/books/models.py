@@ -1,10 +1,14 @@
 from pydantic import BaseModel
-from typing import Optional, Set, List
+from typing import Dict, Optional, Set, List
 from pydantic.fields import Field
 
 class Image(BaseModel):
     url :str
     name : str
+
+class Comment(BaseModel):
+    person_name: str
+    comment: str
 
 class MyBook(BaseModel):
     name : str
@@ -15,6 +19,7 @@ class MyBook(BaseModel):
     categories : Set[str] = set() # only unique values
     image : Optional[Image]=None # one image
     # image : Optional[List[Image]]=None # multiple images as optional
+    comments: Optional[List[Comment]]
 
     class Config:
         """will be shown as a example"""
@@ -29,7 +34,15 @@ class MyBook(BaseModel):
                 "image":{
                     "url":"google.com/images/my_new_book",
                     "name":"coverpage"
-                }
+                },
+                "comments":[
+                    {
+                        "person_name":"YouKnow",
+                        "comment":"one time read"
+                    }
+
+                ]
+
             }
         }
 

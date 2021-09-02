@@ -6,7 +6,7 @@ from fastapi.encoders import jsonable_encoder
 from book_store.dependencies import pagination_params,sort_using_params
 from fastapi import APIRouter
 from fastapi.param_functions import Depends
-from book_store.books.models import MyBook
+from book_store.books.models import Comment, MyBook
 from pymongo import MongoClient
 from enum import Enum
 
@@ -33,7 +33,7 @@ def select_book(book:choices):
 
 @router.post("/")
 def add_book(book:MyBook):
-    """ get data of book though payload"""
+    """ post data of book though payload"""
     object = books_collection.insert_one(jsonable_encoder(book))
     if object.acknowledged:
         return True
@@ -52,8 +52,8 @@ def get_books(options:dict=Depends(pagination_params)
 @router.put("/{book_id}")
 def update_book(book_id:str,book:MyBook):
     """ get data of book though payload"""
-    object = books_collection.update_one({"_id":ObjectId(book_id)},{"$set":jsonable_encoder(book)})
-    if object.acknowledged:
+    response = books_collection.update_one({"_id":ObjectId(book_id)},{"$set":jsonable_encoder(book)})
+    if response.acknowledged:
         return convert_book_to_json(books_collection.find_one({"_id":ObjectId(book_id)}))
     else:
         return {"message":"error"}
@@ -67,4 +67,22 @@ def delete_book(book_id:str):
         return False
 
 
+
+@router.get("/{book_id}")
+def get_book(book_id:str):
+    """ get data of book though payload"""
+    return convert_book_to_json(books_collection.find_one({"_id":ObjectId(book_id)}))
+
+
+@router.put("/comment/{book_id}")
+def add_comment(book_id:str,comment:Comment):
+    response = books_collection.update_one({"_id":ObjectId(book_id)},{"$push":{"comments":jsonable_encoder(comment)}})
+    if response.acknowledged:
+        return True
+
+@router.delete("/comment/{book_id}")
+def delete_comment(book_id:str,comment:Comment):
+    response = books_collection.update_one({"_id":ObjectId(book_id)},{"$pull":{"comments":jsonable_encoder(comment)}})
+    if response.acknowledged:
+        return True
 
