@@ -1,4 +1,4 @@
-## to clone project
+## To clone project
 $git clone
 
 ## install virtual environment and requirements
@@ -10,12 +10,13 @@ $ pip install -r requirements.txt
 $ uvicorn book_store.main:app --reload
 
 ## docker setup
-$sudo apt-get install \
+"""$sudo apt-get install \
     apt-transport-https \
     ca-certificates \
     curl \
     gnupg \
     lsb-release
+    """
 
 
 $ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
